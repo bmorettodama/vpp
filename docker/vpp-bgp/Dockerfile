@@ -3,6 +3,7 @@ FROM golang:1.11.5-alpine3.8 as builder
 # we want a static binary
 ENV CGO_ENABLED=0
 
+# contiv-crd depends on govppmux transitively, but only because it reads some constants from vpp-agent plugins
 ENV GO_BUILD_TAGS=mockvpp
 
 RUN apk add --update git make
@@ -13,7 +14,7 @@ WORKDIR /go/src/github.com/contiv/vpp
 
 RUN make contiv-bgp
 
-FROM scratch
+FROM alpine:3.8
 
 COPY --from=builder /go/src/github.com/contiv/vpp/cmd/contiv-bgp/contiv-bgp /contiv-bgp
 

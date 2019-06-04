@@ -8,7 +8,7 @@ LDFLAGS = -s -w -X $(CNINFRA_AGENT).BuildVersion=$(VERSION) -X $(CNINFRA_AGENT).
 COVER_DIR ?= /tmp/
 
 # Build commands
-build: contiv-agent contiv-ksr contiv-crd contiv-cni contiv-stn contiv-init contiv-netctl contiv-ui-backend
+build: contiv-agent contiv-ksr contiv-crd contiv-cni contiv-stn contiv-init contiv-netctl contiv-ui-backend contiv-bgp
 
 # Run all
 all: lint build test install
@@ -53,10 +53,16 @@ contiv-ui-backend:
 	@echo "# building contiv-ui-backend"
 	cd cmd/contiv-ui-backend && go build -v -i -ldflags "${LDFLAGS}" -tags="${GO_BUILD_TAGS}"
 
+# Build contiv-bgp
+contiv-bgp:
+	@echo "# building contiv-bgp"
+	cd cmd/contiv-bgp && go build -v -i -ldflags "${LDFLAGS}" -tags="${GO_BUILD_TAGS}"
+
 # Install commands
 install:
 	@echo "# installing commands"
 	cd cmd/contiv-agent && go install -v -ldflags "${LDFLAGS}" -tags="${GO_BUILD_TAGS}"
+	cd cmd/contiv-bgp && go install -v -ldflags "${LDFLAGS}"
 	cd cmd/contiv-ksr && go install -v -ldflags "${LDFLAGS}"
 	cd cmd/contiv-crd && go install -v -ldflags "${LDFLAGS}"
 	cd cmd/contiv-cni && go install -v -ldflags "${LDFLAGS}"
@@ -68,6 +74,7 @@ install:
 clean:
 	@echo "# cleaning binaries"
 	rm -f cmd/contiv-agent/contiv-agent
+	rm -f cmd/contiv-bgp/contiv-bgp
 	rm -f cmd/contiv-cni/contiv-cni
 	rm -f cmd/contiv-ksr/contiv-ksr
 	rm -f cmd/contiv-crd/contiv-crd
